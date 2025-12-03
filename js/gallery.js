@@ -1,5 +1,5 @@
-// gallery.js — Loads local images from manifests inside assets/<category>/manifest.txt
-// FIXED for GitHub Pages + custom domain
+// gallery.js — Loads Cloudinary URLs from manifest.txt inside assets/<category>/manifest.txt
+// Exports: initGalleries(), initRecentProjects()
 
 const galleryCategories = [
   { key: 'roofing', label: 'Roofing Projects' },
@@ -11,71 +11,61 @@ const galleryCategories = [
   { key: 'all-projects', label: 'All Projects' }
 ];
 
-// 🔥 Normalize paths for GitHub Pages
-function cleanPath(p) {
-  return p.replace(/\\/g, "/").toLowerCase();
-}
-
-// Load filenames from manifest.txt inside each category folder
 async function loadManifestImages(folder) {
-  const manifestUrl = cleanPath(`assets/${folder}/manifest.txt?v=${Date.now()}`);
-
   try {
-    const res = await fetch(manifestUrl, { cache: "no-store" });
+    const res = await fetch(`assets/${folder}/manifest.txt?cache=${Date.now()}`);
 
     if (!res.ok) {
-      console.warn(`❌ Manifest not found: ${manifestUrl}`);
+      console.warn("Missing manifest:", folder);
       return [];
     }
 
     const text = await res.text();
-    const files = text.split("\n").map(f => f.trim()).filter(Boolean);
+    const urls = text.split("\n").map(u => u.trim()).filter(Boolean);
 
-    return files.map(filename => ({
-      url: cleanPath(`assets/${folder}/${filename}`),
-      filename
+    return urls.map(url => ({
+      url,
+      filename: url.split('/').pop()
     }));
-
-  } catch (err) {
-    console.error(`❌ Error loading manifest for ${folder}`, err);
+  } catch (e) {
+    console.error("Manifest error:", e);
     return [];
   }
 }
 
-// Create carousel section
 function createCarousel(category, images) {
-  const section = document.createElement("div");
-  section.className = "gallery-section";
+  if (!images.length) return null;
 
-  const title = document.createElement("div");
-  title.className = "carousel-title";
+  const section = document.createElement('div');
+  section.className = 'gallery-section';
+
+  const title = document.createElement('div');
+  title.className = 'carousel-title';
   title.textContent = category.label;
-  section.appendChild(title);
 
-  const container = document.createElement("div");
-  container.className = "carousel-container";
+  const container = document.createElement('div');
+  container.className = 'carousel-container';
 
-  const img = document.createElement("img");
-  img.src = images[0]?.url || "";
-  img.alt = category.label;
+  const img = document.createElement('img');
+  img.src = images[0].url;
   img.loading = "lazy";
 
   container.appendChild(img);
 
   let index = 0;
 
-  const left = document.createElement("button");
-  left.className = "carousel-btn left";
-  left.innerHTML = "&#8592;";
+  const left = document.createElement('button');
+  left.className = 'carousel-btn left';
+  left.innerHTML = '&#8592;';
   left.onclick = ev => {
     ev.stopPropagation();
     index = (index - 1 + images.length) % images.length;
     img.src = images[index].url;
   };
 
-  const right = document.createElement("button");
-  right.className = "carousel-btn right";
-  right.innerHTML = "&#8594;";
+  const right = document.createElement('button');
+  right.className = 'carousel-btn right';
+  right.innerHTML = '&#8594;';
   right.onclick = ev => {
     ev.stopPropagation();
     index = (index + 1) % images.length;
@@ -85,75 +75,42 @@ function createCarousel(category, images) {
   container.appendChild(left);
   container.appendChild(right);
 
-  container.addEventListener("click", () => openModal(images, index));
-
+  section.appendChild(title);
   section.appendChild(container);
   return section;
 }
 
-// MODAL HANDLING
-let modalState = { images: [], index: 0 };
-
-function openModal(images, index) {
-  modalState = { images, index };
-  const modal = document.getElementById("galleryImageModal");
-  const img = document.getElementById("galleryModalImg");
-  img.src = images[index].url;
-  modal.style.display = "flex";
-}
-
-function closeModal() {
-  document.getElementById("galleryImageModal").style.display = "none";
-}
-
-document.getElementById("closeGalleryModal")?.addEventListener("click", closeModal);
-document.getElementById("galleryImageModal")?.addEventListener("click", e => {
-  if (e.target === e.currentTarget) closeModal();
-});
-
-document.getElementById("galleryModalLeft")?.addEventListener("click", () => {
-  modalState.index = (modalState.index - 1 + modalState.images.length) % modalState.images.length;
-  document.getElementById("galleryModalImg").src = modalState.images[modalState.index].url;
-});
-
-document.getElementById("galleryModalRight")?.addEventListener("click", () => {
-  modalState.index = (modalState.index + 1) % modalState.images.length;
-  document.getElementById("galleryModalImg").src = modalState.images[modalState.index].url;
-});
-
-// EXPORTS
 export async function initGalleries() {
-  const container = document.getElementById("galleries");
+  const container = document.getElementById('galleries');
   if (!container) return;
 
   container.innerHTML = "";
 
   for (const cat of galleryCategories) {
     const images = await loadManifestImages(cat.key);
-    if (images.length === 0) continue;
-
-    const el = createCarousel(cat, images);
-    container.appendChild(el);
+    const carousel = createCarousel(cat, images);
+    if (carousel) container.appendChild(carousel);
   }
 }
 
 export async function initRecentProjects() {
-  const grid = document.getElementById("recentProjectsGrid");
+  const grid = document.getElementById('recentProjectsGrid');
   if (!grid) return;
 
   grid.innerHTML = "";
 
   for (const cat of galleryCategories) {
     const images = await loadManifestImages(cat.key);
-    if (images.length === 0) continue;
+    if (!images.length) continue;
 
-    const card = document.createElement("div");
-    card.className = "project-card";
+    const card = document.createElement('div');
+    card.className = 'project-card';
+
     card.innerHTML = `
       <div class="project-carousel-title">${cat.label}</div>
-      <img loading="lazy" src="${images[0].url}" alt="${cat.label}">
+      <img src="${images[0].url}" loading="lazy">
     `;
-    card.onclick = () => openModal(images, 0);
+
     grid.appendChild(card);
   }
 }
