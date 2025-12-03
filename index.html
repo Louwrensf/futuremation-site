@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Futuremation Construction</title>
+  <meta name="description" content="Futuremation Construction — Roofing, Renovations, Painting, Kitchens, Building & More. Reliable construction and maintenance services.">
+  <meta name="theme-color" content="#003366">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <link rel="icon" href="assets/icons/favicon.ico">
+</head>
+
+<body>
+
+  <!-- PRELOADER -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-inner">
+      <div class="spinner"></div>
+      <div class="preloader-text">Futuremation</div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/">Future<span>mation</span></a>
+
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <nav class="nav" id="navLinks" aria-label="Main navigation">
+        <a href="#home">Home</a>
+        <a href="#services">Services</a>
+        <a href="#project-galleries">Galleries</a>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="hero">
+    <div class="container hero-inner">
+      <h1 class="fade-in">Building Tomorrow, Today</h1>
+      <p class="fade-in" style="animation-delay:.2s">
+        Futuremation Construction — Roofing, Renovations, Building, Kitchens, Painting and more.
+      </p>
+      <a class="btn btn-accent fade-in" style="animation-delay:.4s" href="#services">Explore Services</a>
+    </div>
+  </section>
+
+  <!-- SERVICES (NEW CARD SYSTEM) -->
+  <section id="services" class="section light">
+    <div class="container">
+      <h2>Our Services</h2>
+
+      <!-- NEW CLEAN SERVICES GRID -->
+      <div id="servicesContainer" class="services-buttons-grid"></div>
+    </div>
+  </section>
+
+  <!-- PROJECT GALLERIES -->
+  <section id="project-galleries" class="section">
+    <div class="container">
+      <h2>Project Categories</h2>
+      <div id="galleries" class="galleries-row"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+<section id="about" class="section">
+  <div class="container about-grid">
+
+    <!-- LEFT CONTENT -->
+    <div>
+
+      <h2>About Futuremation</h2>
+      <p>
+        Futuremation Construction is a proudly South African company providing
+        trusted and reliable construction, renovation, and maintenance services.
+        With years of experience, we combine skilled workmanship with
+        modern building solutions to deliver quality results that stand the test of time.
+      </p>
+
+      <h3 style="margin-top:20px;">Our Mission</h3>
+      <p>
+        To deliver reliable, high-quality construction and renovation services
+        that improve homes, strengthen buildings, and ensure long-term value
+        for our clients — with honesty, transparency, and professional excellence.
+      </p>
+
+      <h3 style="margin-top:20px;">Our Vision</h3>
+      <p>
+        To become one of South Africa’s most trusted all-in-one construction
+        and maintenance companies — known for innovation, exceptional service,
+        and creating safe, beautiful, long-lasting spaces.
+      </p>
+
+      <h3 style="margin-top:20px;">What Sets Us Apart</h3>
+      <ul class="features-list">
+        <li><i class="fas fa-check-circle"></i> Transparent pricing & honest advice</li>
+        <li><i class="fas fa-check-circle"></i> Quality materials and expert workmanship</li>
+        <li><i class="fas fa-check-circle"></i> Full project management from start to finish</li>
+        <li><i class="fas fa-check-circle"></i> Fast response and reliable communication</li>
+        <li><i class="fas fa-check-circle"></i> Work guaranteed for peace of mind</li>
+      </ul>
+
+    </div>
+
+    <!-- RIGHT STATS -->
+    <div class="about-stats">
+      <div class="stat-item reveal">
+        <div class="counter">15</div>
+        <p class="counter-sub">Years Experience</p>
+      </div>
+
+      <div class="stat-item reveal">
+        <div class="counter">500+</div>
+        <p class="counter-sub">Projects Completed</p>
+      </div>
+
+      <div class="stat-item reveal">
+        <div class="counter">98%</div>
+        <p class="counter-sub">Client Satisfaction</p>
+      </div>
+
+      <div class="stat-item reveal">
+        <div class="counter">24/7</div>
+        <p class="counter-sub">Support Available</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+  <!-- PROJECTS -->
+  <section id="projects" class="section light">
+    <div class="container">
+      <h2>Recent Projects</h2>
+      <div id="recentProjectsGrid" class="projects-grid"></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="container contact-grid">
+      <div>
+        <h2>Contact Us</h2>
+        <p><b>Phone:</b> 073 423 6523</p>
+        <p><b>Email:</b> info@futuremation.co.za</p>
+        <p><b>Location:</b> Waterfall, Durban</p>
+      </div>
+
+      <form id="contactForm" class="contact-form" novalidate>
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Email Address" required>
+        <select name="service">
+          <option value="">Select a Service</option>
+          <option>Roofing</option>
+          <option>Building</option>
+          <option>Renovations</option>
+          <option>Painting</option>
+        </select>
+        <textarea name="message" placeholder="Project details..." required></textarea>
+        <button type="submit" class="btn btn-accent">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <h3>Futuremation</h3>
+          <p>Construction & Maintenance Specialists</p>
+        </div>
+
+        <div>
+          <h4>Services</h4>
+          <ul>
+            <li>Roofing</li>
+            <li>Building</li>
+            <li>Renovations</li>
+            <li>Painting</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Contact</h4>
+          <p>Email: info@futuremation.co.za</p>
+          <p>Phone: 073 423 6523</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- GALLERY MODAL -->
+  <div id="galleryImageModal" class="gallery-modal" aria-hidden="true">
+    <button id="closeGalleryModal" class="gallery-close" aria-label="Close">&times;</button>
+    <button id="galleryModalLeft" class="gallery-nav left" aria-label="Previous">&#8592;</button>
+    <img id="galleryModalImg" alt="Large view">
+    <button id="galleryModalRight" class="gallery-nav right" aria-label="Next">&#8594;</button>
+  </div>
+
+  <!-- QUOTE MODAL -->
+  <div id="quoteModal" class="modal" aria-hidden="true">
+    <div id="quoteToolContainer" class="modal-content"></div>
+  </div>
+
+  <!-- FLOATING CTA -->
+  <a id="floatingContact" class="floating-cta" href="#contact">
+    <i class="fas fa-envelope"></i> Quote
+  </a>
+
+  <a class="whatsapp-btn"
+     href="https://wa.me/27734236523?text=Hi%20Futuremation%2C%20I%20have%20a%20project%20enquiry."
+     target="_blank" rel="noopener">
+     <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <script>
+    const y = document.getElementById('year');
+    if (y) y.textContent = new Date().getFullYear();
+  </script>
+
+  <!-- MAIN JS -->
+  <script type="module" src="js/main.js"></script>
+
+</body>
+</html>
