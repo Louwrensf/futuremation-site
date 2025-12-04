@@ -147,7 +147,7 @@ function createCarousel(category, images) {
     autoplay = setInterval(() => {
       currentIndex = (currentIndex + 1) % images.length;
       crossfadeTo(currentIndex);
-    }, 4000);
+    }, 10000);
   }
   function stopAutoplay() {
     clearInterval(autoplay);
