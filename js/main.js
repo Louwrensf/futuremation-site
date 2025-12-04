@@ -1,5 +1,4 @@
-// js/main.js (module) — full file (imports gallery + enhancements + services)
-
+// js/main.js
 const mobileToggle = document.getElementById('mobileToggle');
 const navLinks = document.getElementById('navLinks');
 
