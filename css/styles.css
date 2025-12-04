@@ -939,3 +939,17 @@ textarea {
     padding: 2px 8px;
   }
 }
+/* Ultra-compact version */
+.gallery-section.compact {
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.gallery-section.compact .carousel-container {
+  height: 300px;
+}
+
+.gallery-section.compact .carousel-title {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
