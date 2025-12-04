@@ -1,7 +1,6 @@
 /* ============================================================
    FUTUREMATION CONSTRUCTION — STYLES (FULL - Option B: 350px)
-   - Gallery height: 350px (Option B)
-   - Gallery spacing: Tidy & Spacious
+   Updated: Gallery sections now display side-by-side
 ============================================================ */
 
 /* ---------- VARIABLES ---------- */
@@ -106,7 +105,7 @@ h2{
 @media (max-width:900px){ .section{padding:48px 0} }
 
 /* ============================================================
-   SERVICES — HORIZONTAL BUTTON GRID
+   SERVICES
 ============================================================ */
 .services-buttons-grid,
 #servicesContainer,
@@ -136,25 +135,28 @@ h2{
 .service-button-info h3{margin:0;font-size:1.05rem;color:var(--primary)}
 .service-button-info p{margin:4px 0 0;color:var(--muted);font-size:.92rem}
 
-/* responsive service layout */
 @media (max-width:1000px){ .service-button{flex:1 1 calc(33.333% - 20px)} }
 @media (max-width:700px){ .service-button{flex:1 1 calc(50% - 16px)} }
 @media (max-width:480px){ .service-button{flex:1 1 100%} }
 
 /* ============================================================
-   GALLERIES — tidy & spacious (Option B)
-   - Carousel height set to 350px (Option B)
+   GALLERIES — SIDE-BY-SIDE GRID ✔ FIXED
 ============================================================ */
 
-/* container for each gallery section */
+/* gallery grid — THIS IS THE FIX */
+.galleries-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(420px, 1fr));
+  gap:24px;
+  margin-top:18px;
+}
+
+/* each gallery card */
 .gallery-section{
-  margin-bottom:40px;
   background:var(--bg);
   border-radius:12px;
   padding:18px;
   box-shadow:0 6px 20px rgba(0,0,0,0.04);
-  max-width:100%;
-  overflow:hidden;
 }
 
 /* title */
@@ -167,24 +169,25 @@ h2{
   padding-left:12px;
 }
 
-/* carousel box */
+/* carousel container */
 .carousel-container{
   position:relative;
   border-radius:10px;
   overflow:hidden;
   background:#f6f7f9;
-  height:350px; /* Option B height */
+  height:350px;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:10px;
 }
 
-/* image fits nicely without distortion */
+/* images */
 .carousel-container img{
   max-width:92%;
   max-height:92%;
-  width:auto;height:auto;
+  width:auto;
+  height:auto;
   object-fit:contain;
   border-radius:6px;
   transition:transform .28s ease;
@@ -203,7 +206,7 @@ h2{
 .carousel-btn.left{ left:14px }
 .carousel-btn.right{ right:14px }
 
-/* counter / info badges */
+/* badges */
 .carousel-counter,
 .carousel-info{
   position:absolute;bottom:12px;right:12px;
@@ -211,26 +214,8 @@ h2{
 }
 .carousel-info{ right:auto; left:12px }
 
-/* gallery list layout */
-.galleries-row{
-  display:flex;
-  flex-direction:column; /* stacked for tidy & spacious */
-  gap:var(--gap-lg);
-  margin-top:18px;
-}
-
-/* compact variants for future switching */
-.gallery-section.compact{ padding:12px; margin-bottom:22px }
-.gallery-section.compact .carousel-container{ height:320px }
-
-.gallery-section {
-    max-width: 900px;       /* perfect size */
-    margin-left: auto;
-    margin-right: auto;
-}
-
 /* ============================================================
-   RECENT PROJECTS (cards)
+   RECENT PROJECTS
 ============================================================ */
 .projects-grid{
   display:grid;
@@ -239,7 +224,6 @@ h2{
   margin-top:12px;
 }
 
-/* project card */
 .project-card{
   background: #fff;
   border-radius:12px;
@@ -249,28 +233,21 @@ h2{
   cursor:pointer;
   display:flex;
   flex-direction:column;
-  height:250px; /* compact but visible */
+  height:250px;
 }
 .project-card:hover{ transform:translateY(-6px); box-shadow:0 12px 34px rgba(0,0,0,0.12) }
 
 .project-carousel-title{
   padding:12px 14px;font-weight:700;color:var(--primary);background:#fafafa;border-bottom:1px solid #eee;
 }
-.project-card img,
-.project-thumbnail{
+.project-card img{
   width:100%;
   height:160px;
   object-fit:cover;
-  display:block;
-}
-
-/* image count badge */
-.project-image-count{
-  position:absolute;bottom:12px;right:12px;background:rgba(0,51,102,0.9);color:#fff;padding:6px 10px;border-radius:16px;font-size:12px;
 }
 
 /* ============================================================
-   MODALS & QUOTE FORM
+   MODALS + QUOTES
 ============================================================ */
 .modal{
   position:fixed;inset:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,0.55);z-index:9999;padding:20px;
@@ -283,43 +260,14 @@ h2{
 .request-modal{ animation:fadeIn .22s ease-out }
 @keyframes fadeIn{ from{opacity:0;transform:scale(.98)} to{opacity:1;transform:scale(1)} }
 
-.modal-header{ display:flex;justify-content:center;align-items:center;position:relative;margin-bottom:12px }
-.modal-header h2{ margin:0;font-size:22px;color:var(--primary) }
-.close-modal{ position:absolute;right:0;background:none;border:0;font-size:22px;cursor:pointer;color:var(--muted) }
-
-/* form grid */
-.service-request-form .form-grid{ display:grid;grid-template-columns:1fr 1fr;gap:14px }
-@media (max-width:700px){ .service-request-form .form-grid{ grid-template-columns:1fr } }
-
-.service-request-form label{ display:flex;flex-direction:column;font-size:14px;color:var(--text);font-weight:600 }
-.service-request-form input,
-.service-request-form select,
-.service-request-form textarea{
-  margin-top:6px;padding:10px 12px;border-radius:8px;border:1px solid #d9d9d9;background:#fff;font-size:14px;
-}
-.service-request-form input:focus,
-.service-request-form select:focus,
-.service-request-form textarea:focus{ outline:none;border-color:var(--secondary) }
-
-textarea{ grid-column:1 / -1; min-height:110px; resize:vertical }
-
-/* file thumbs */
-.thumb-row{ display:flex;gap:10px;margin-top:10px;flex-wrap:wrap }
-.thumb{ width:72px;height:72px;border-radius:8px;border:1px solid #e2e2e2;object-fit:cover }
-
-/* actions */
-.request-actions{ display:flex;gap:12px;margin-top:14px }
-.btn-accent{ background:var(--accent); color:#fff; padding:10px 20px; border-radius:10px; border:0; font-weight:700; cursor:pointer }
-.btn{ padding:10px 20px; border-radius:10px; background:transparent; border:1px solid rgba(0,0,0,0.08); cursor:pointer }
-
 /* ============================================================
-   FLOATING CTA & WHATSAPP
+   FLOATING BUTTONS
 ============================================================ */
 .floating-cta{ position:fixed; bottom:120px; right:20px; background:var(--accent); color:#fff; padding:12px 16px; border-radius:50px; font-weight:700; text-decoration:none; z-index:999 }
 .whatsapp-btn{ position:fixed; bottom:40px; right:22px; width:56px; height:56px; background:#25D366; color:#fff; display:flex; align-items:center; justify-content:center; border-radius:50%; box-shadow:0 8px 24px rgba(0,0,0,0.18); z-index:999 }
 
 /* ============================================================
-   PRELOADER, REVEALS, RESPONSIVE
+   PRELOADER + ANIMATIONS
 ============================================================ */
 #preloader{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:var(--bg); z-index:99999 }
 #preloader.hidden{ opacity:0; visibility:hidden; pointer-events:none; transition:opacity .4s }
@@ -333,13 +281,10 @@ textarea{ grid-column:1 / -1; min-height:110px; resize:vertical }
   .nav{ display:none; position:absolute; top:64px; right:18px; background:var(--primary); padding:16px; border-radius:8px; flex-direction:column }
   .nav a{ margin:8px 0; color:#fff; }
   .hero{ padding:100px 0 60px }
-  .carousel-container{ height:300px } /* slightly smaller on tablets */
 }
 @media (max-width:480px){
   .carousel-container{ height:250px }
   .carousel-btn{ width:34px; height:34px; font-size:16px }
-  .project-card{ height:auto }
-  .project-card img{ height:160px }
 }
 
 /* small utility */
