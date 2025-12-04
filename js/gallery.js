@@ -5,9 +5,10 @@ const CLOUDINARY_CONFIG = {
   cloudName: "dpzgcco2c",
   baseFolder: "futuremation",
   transformations: {
-    gallery: "c_fill,w_800,h_600,q_auto,f_auto",
-    thumbnail: "c_thumb,w_400,h_300,q_auto",
-    modal: "c_limit,w_1200,q_auto",
+    // Updated for better quality and smaller containers
+    gallery: "c_fill,w_900,h_500,q_80,f_auto", // Slightly larger for 90% container
+    thumbnail: "c_thumb,w_450,h_300,q_auto",
+    modal: "c_limit,w_1400,q_auto",
     original: ""
   }
 };
@@ -92,7 +93,7 @@ function createCarousel(category, images) {
   if (!images.length) return null;
 
   const section = document.createElement('div');
-  section.className = 'gallery-section';
+  section.className = 'gallery-section compact'; // ADDED "compact" class here
   section.dataset.category = category.key;
 
   const title = document.createElement('div');
@@ -130,11 +131,7 @@ function createCarousel(category, images) {
     prevBtn.onclick = (ev) => {
       ev.stopPropagation();
       currentIndex = (currentIndex - 1 + images.length) % images.length;
-      img.src = images[currentIndex].gallery;
-      img.alt = `${category.label} - ${images[currentIndex].filename}`;
-      img.dataset.modalUrl = images[currentIndex].modal;
-      img.dataset.originalUrl = images[currentIndex].original;
-      container.dataset.currentIndex = currentIndex.toString();
+      updateCarouselImage(img, container, images, currentIndex, category.label);
     };
 
     const nextBtn = document.createElement('button');
@@ -144,11 +141,7 @@ function createCarousel(category, images) {
     nextBtn.onclick = (ev) => {
       ev.stopPropagation();
       currentIndex = (currentIndex + 1) % images.length;
-      img.src = images[currentIndex].gallery;
-      img.alt = `${category.label} - ${images[currentIndex].filename}`;
-      img.dataset.modalUrl = images[currentIndex].modal;
-      img.dataset.originalUrl = images[currentIndex].original;
-      container.dataset.currentIndex = currentIndex.toString();
+      updateCarouselImage(img, container, images, currentIndex, category.label);
     };
 
     container.appendChild(prevBtn);
@@ -158,6 +151,7 @@ function createCarousel(category, images) {
     const counter = document.createElement('div');
     counter.className = 'carousel-counter';
     counter.textContent = `1 / ${images.length}`;
+    counter.id = `counter-${category.key}`;
     container.appendChild(counter);
   }
 
@@ -171,6 +165,21 @@ function createCarousel(category, images) {
   section.appendChild(container);
   
   return section;
+}
+
+// Helper function to update carousel image and counter
+function updateCarouselImage(imgElement, container, images, index, categoryLabel) {
+  imgElement.src = images[index].gallery;
+  imgElement.alt = `${categoryLabel} - ${images[index].filename}`;
+  imgElement.dataset.modalUrl = images[index].modal;
+  imgElement.dataset.originalUrl = images[index].original;
+  container.dataset.currentIndex = index.toString();
+  
+  // Update counter if it exists
+  const counter = container.querySelector('.carousel-counter');
+  if (counter) {
+    counter.textContent = `${index + 1} / ${images.length}`;
+  }
 }
 
 // Gallery Modal System
@@ -321,7 +330,7 @@ export async function initRecentProjects() {
       if (images.length > 0) {
         hasProjects = true;
         const card = document.createElement('div');
-        card.className = 'project-card';
+        card.className = 'project-card compact'; // ADDED "compact" class here
         card.dataset.category = cat.key;
         
         card.innerHTML = `
