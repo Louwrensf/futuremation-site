@@ -142,51 +142,9 @@
 </div>
 
   <!-- QUOTE MODAL -->
-  <div id="quoteTool">
-  <h2 class="request-title">Request a Service</h2>
-
-  <form id="quoteForm">
-    <div class="request-form-grid">
-
-      <div>
-        <label>Full Name</label>
-        <input type="text" name="fullName" required>
-      </div>
-
-      <div>
-        <label>Address / Suburb</label>
-        <input type="text" name="address" required>
-      </div>
-
-      <div>
-        <label>Service</label>
-        <select name="service" required>
-          <option value="">Select a service</option>
-          <option>Roofing</option>
-          <option>Building</option>
-          <option>Renovations</option>
-          <option>Painting</option>
-          <option>Kitchens</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Upload photos (up to 10)</label>
-        <input type="file" name="photos" multiple accept="image/*">
-      </div>
-
-      <label class="file-upload-label">Describe what you need</label>
-      <textarea name="description" required></textarea>
-    </div>
-
-    <div class="request-buttons">
-      <button type="button" class="btn cancel-btn" id="cancelQuote">Cancel</button>
-      <button type="submit" class="btn submit-btn">Submit Request</button>
-    </div>
-
-  </form>
-</div>
-
+ <div id="quoteModal" class="modal">
+    <div id="quoteToolContainer" class="modal-content"></div>
+  </div>
 
   <!-- FLOATING CTA -->
   <a id="floatingContact" class="floating-cta" href="#contact">
