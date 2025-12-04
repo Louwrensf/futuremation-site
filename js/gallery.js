@@ -1,12 +1,14 @@
-// gallery.js — Loads Cloudinary URLs from manifest.txt
-// Updated with your actual Cloudinary configuration
+// gallery.js — Loads images from manifest.txt and builds Cloudinary URLs
+// Updated to work with your filename-only manifests
 
 const CLOUDINARY_CONFIG = {
-  cloudName: "dpzgcco2c", // Your cloud name from the URLs
+  cloudName: "dpzgcco2c", // Your cloud name
+  baseFolder: "futuremation", // Your base folder in Cloudinary
   transformations: {
     gallery: "c_fill,w_800,h_600,q_auto,f_auto", // For gallery display
     thumbnail: "c_thumb,w_400,h_300,q_auto", // For thumbnails
-    modal: "c_limit,w_1200,q_auto" // For full-size modal view
+    modal: "c_limit,w_1200,q_auto", // For full-size modal view
+    original: "" // No transformations for original
   }
 };
 
@@ -20,33 +22,25 @@ const galleryCategories = [
   { key: 'all-projects', label: 'All Projects' }
 ];
 
-// Helper to optimize Cloudinary URLs with transformations
-function optimizeCloudinaryUrl(url, size = 'gallery') {
-  if (!url || !url.includes('res.cloudinary.com')) return url;
+// Build Cloudinary URL from filename
+function buildCloudinaryUrl(folder, filename, size = 'gallery') {
+  const { cloudName, baseFolder, transformations } = CLOUDINARY_CONFIG;
   
-  const { transformations } = CLOUDINARY_CONFIG;
-  
-  // If URL already has transformations, replace them
-  if (url.includes('/upload/') && url.includes('/v')) {
-    const parts = url.split('/upload/');
-    const afterUpload = parts[1];
-    
-    // Check if it has version string (v1764808507)
-    if (afterUpload.match(/^v\d+\//)) {
-      // Insert transformation before version
-      const versionIndex = afterUpload.indexOf('/');
-      const baseUrl = afterUpload.substring(versionIndex + 1);
-      const version = afterUpload.substring(0, versionIndex + 1);
-      
-      return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/image/upload/${transformations[size]}/${version}${baseUrl}`;
-    }
+  // Skip non-image files (like .mp4, manifest.txt)
+  const lowerFilename = filename.toLowerCase();
+  if (lowerFilename.includes('manifest.txt') || 
+      lowerFilename.endsWith('.mp4') ||
+      lowerFilename.endsWith('.mov') ||
+      lowerFilename.endsWith('.avi')) {
+    return null;
   }
   
-  // Default: add transformation at the beginning
-  return url.replace(
-    `/upload/`,
-    `/upload/${transformations[size]}/`
-  );
+  // For images, build the URL
+  const transform = transformations[size] ? `${transformations[size]}/` : '';
+  
+  // Note: We're not using versioning (v123456) in the URL
+  // Cloudinary will handle this automatically
+  return `https://res.cloudinary.com/${cloudName}/image/upload/${transform}${baseFolder}/${folder}/${encodeURIComponent(filename)}`;
 }
 
 async function loadManifestImages(folder, size = 'gallery') {
@@ -60,19 +54,40 @@ async function loadManifestImages(folder, size = 'gallery') {
     }
 
     const text = await res.text();
-    const urls = text.split("\n")
-      .map(u => u.trim())
-      .filter(Boolean)
-      .map(url => ({
-        thumbnail: optimizeCloudinaryUrl(url, 'thumbnail'),
-        gallery: optimizeCloudinaryUrl(url, 'gallery'),
-        modal: optimizeCloudinaryUrl(url, 'modal'),
-        original: url,
-        filename: url.split('/').pop(),
-        category: folder
-      }));
+    
+    // Filter and process filenames
+    const images = text.split("\n")
+      .map(filename => filename.trim())
+      .filter(filename => {
+        // Filter out empty lines and non-image files
+        if (!filename) return false;
+        
+        const lower = filename.toLowerCase();
+        const isImage = lower.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/);
+        const isManifest = lower.includes('manifest.txt');
+        const isVideo = lower.match(/\.(mp4|mov|avi|wmv|flv)$/);
+        
+        return isImage && !isManifest && !isVideo;
+      })
+      .map(filename => {
+        // Build URLs for different sizes
+        const originalUrl = buildCloudinaryUrl(folder, filename, 'original');
+        const galleryUrl = buildCloudinaryUrl(folder, filename, 'gallery');
+        const thumbnailUrl = buildCloudinaryUrl(folder, filename, 'thumbnail');
+        const modalUrl = buildCloudinaryUrl(folder, filename, 'modal');
+        
+        return {
+          filename,
+          original: originalUrl,
+          gallery: galleryUrl,
+          thumbnail: thumbnailUrl,
+          modal: modalUrl,
+          category: folder
+        };
+      })
+      .filter(img => img.original && img.gallery); // Remove null URLs
 
-    return urls;
+    return images;
   } catch (e) {
     console.error(`Error loading manifest for ${folder}:`, e);
     return [];
@@ -98,7 +113,7 @@ function createCarousel(category, images) {
   const img = document.createElement('img');
   img.src = images[0].gallery;
   img.loading = "lazy";
-  img.alt = `${category.label} - Image 1`;
+  img.alt = `${category.label} - ${images[0].filename}`;
   img.dataset.modalUrl = images[0].modal;
   img.dataset.originalUrl = images[0].original;
 
@@ -145,7 +160,7 @@ function createCarousel(category, images) {
   // Update function
   function updateCarouselImage(imageElement, imageData, index) {
     imageElement.src = imageData.gallery;
-    imageElement.alt = `${category.label} - Image ${index + 1}`;
+    imageElement.alt = `${category.label} - ${imageData.filename}`;
     imageElement.dataset.modalUrl = imageData.modal;
     imageElement.dataset.originalUrl = imageData.original;
     counter.textContent = `${index + 1} / ${images.length}`;
@@ -154,6 +169,12 @@ function createCarousel(category, images) {
     const nextIndex = (index + 1) % images.length;
     preloadImage(images[nextIndex].gallery);
   }
+
+  // Add category info
+  const info = document.createElement('div');
+  info.className = 'carousel-info';
+  info.textContent = `${images.length} images`;
+  container.appendChild(info);
 
   section.appendChild(title);
   section.appendChild(container);
@@ -189,7 +210,7 @@ function openGalleryModal(categoryKey, startIndex, images) {
   }
   
   modalImg.src = images[startIndex].modal;
-  modalImg.alt = `${categoryKey} - Image ${startIndex + 1}`;
+  modalImg.alt = `${categoryKey} - ${images[startIndex].filename}`;
   modalImg.dataset.currentIndex = startIndex.toString();
   
   modal.style.display = 'flex';
@@ -228,7 +249,7 @@ function initGalleryModal() {
     
     currentModalIndex = (currentModalIndex - 1 + currentModalImages.length) % currentModalImages.length;
     modalImg.src = currentModalImages[currentModalIndex].modal;
-    modalImg.alt = `${currentModalImages[currentModalIndex].category} - Image ${currentModalIndex + 1}`;
+    modalImg.alt = `${currentModalImages[currentModalIndex].category} - ${currentModalImages[currentModalIndex].filename}`;
     modalImg.dataset.currentIndex = currentModalIndex.toString();
     
     // Preload next
@@ -241,7 +262,7 @@ function initGalleryModal() {
     
     currentModalIndex = (currentModalIndex + 1) % currentModalImages.length;
     modalImg.src = currentModalImages[currentModalIndex].modal;
-    modalImg.alt = `${currentModalImages[currentModalIndex].category} - Image ${currentModalIndex + 1}`;
+    modalImg.alt = `${currentModalImages[currentModalIndex].category} - ${currentModalImages[currentModalIndex].filename}`;
     modalImg.dataset.currentIndex = currentModalIndex.toString();
     
     // Preload previous
@@ -277,8 +298,11 @@ export async function initGalleries() {
     const results = await Promise.all(categoryPromises);
     container.innerHTML = "";
     
+    let hasAnyImages = false;
+    
     results.forEach(({ cat, images }) => {
       if (images.length > 0) {
+        hasAnyImages = true;
         const carousel = createCarousel(cat, images);
         container.appendChild(carousel);
       } else {
@@ -287,14 +311,30 @@ export async function initGalleries() {
         emptySection.className = 'gallery-section empty';
         emptySection.innerHTML = `
           <div class="carousel-title">${cat.label}</div>
-          <div class="empty-gallery">No images yet</div>
+          <div class="empty-gallery">No images available yet</div>
         `;
         container.appendChild(emptySection);
       }
     });
+    
+    if (!hasAnyImages) {
+      container.innerHTML = `
+        <div class="no-galleries-message">
+          <h3>No Galleries Available</h3>
+          <p>Images will appear here once manifest files are set up.</p>
+          <p>Check the browser console for loading errors.</p>
+        </div>
+      `;
+    }
   } catch (error) {
     console.error('Error loading galleries:', error);
-    container.innerHTML = '<div class="error-loading">Error loading galleries. Please refresh.</div>';
+    container.innerHTML = `
+      <div class="error-loading">
+        <h3>Error Loading Galleries</h3>
+        <p>Check that manifest.txt files exist in each assets folder.</p>
+        <p>Console error: ${error.message}</p>
+      </div>
+    `;
   }
 }
 
@@ -305,7 +345,7 @@ export async function initRecentProjects() {
   grid.innerHTML = "<div class='loading-projects'>Loading projects...</div>";
 
   try {
-    // Get first image from each category
+    // Get first image from each category that has images
     const categoryPromises = galleryCategories.map(async cat => {
       const images = await loadManifestImages(cat.key, 'thumbnail');
       return { cat, images: images.slice(0, 1) }; // Just first image
@@ -314,16 +354,17 @@ export async function initRecentProjects() {
     const results = await Promise.all(categoryPromises);
     grid.innerHTML = "";
 
+    let hasProjects = false;
+    
     results.forEach(({ cat, images }) => {
       if (images.length > 0) {
+        hasProjects = true;
         const card = document.createElement('div');
         card.className = 'project-card';
         card.dataset.category = cat.key;
         
-        // Store all images for modal
-        card.dataset.categoryImages = JSON.stringify(
-          images.map(img => ({ modal: img.modal, original: img.original }))
-        );
+        // Store category info for modal
+        card.dataset.categoryKey = cat.key;
 
         card.innerHTML = `
           <div class="project-carousel-title">${cat.label}</div>
@@ -334,7 +375,7 @@ export async function initRecentProjects() {
           <div class="project-image-count">${images.length} image${images.length !== 1 ? 's' : ''}</div>
         `;
 
-        // Make card clickable to open modal with first image
+        // Make card clickable to open modal with all images from this category
         card.addEventListener('click', async () => {
           const allImages = await loadManifestImages(cat.key);
           if (allImages.length > 0) {
@@ -347,14 +388,44 @@ export async function initRecentProjects() {
     });
     
     // If no projects loaded
-    if (grid.children.length === 0) {
-      grid.innerHTML = '<div class="no-projects">No projects available yet.</div>';
+    if (!hasProjects) {
+      grid.innerHTML = `
+        <div class="no-projects">
+          <h3>No Projects Yet</h3>
+          <p>Projects will appear here once images are added.</p>
+        </div>
+      `;
     }
   } catch (error) {
     console.error('Error loading recent projects:', error);
-    grid.innerHTML = '<div class="error-loading">Error loading projects.</div>';
+    grid.innerHTML = `
+      <div class="error-loading">
+        <h3>Error Loading Projects</h3>
+        <p>${error.message}</p>
+      </div>
+    `;
+  }
+}
+
+// Debug helper: Check if manifests are loading
+export async function debugManifests() {
+  console.log('=== Debugging Manifest Loading ===');
+  
+  for (const cat of galleryCategories) {
+    try {
+      const res = await fetch(`assets/${cat.key}/manifest.txt`);
+      console.log(`${cat.key}:`, res.ok ? '✓ Found' : '✗ Missing');
+      
+      if (res.ok) {
+        const text = await res.text();
+        const lines = text.split('\n').filter(l => l.trim());
+        console.log(`  ${lines.length} lines, first few:`, lines.slice(0, 3));
+      }
+    } catch (e) {
+      console.log(`${cat.key}: ✗ Error - ${e.message}`);
+    }
   }
 }
 
 // Export for use in main.js
-export { openGalleryModal, loadManifestImages };
+export { openGalleryModal, loadManifestImages, debugManifests };
