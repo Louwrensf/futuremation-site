@@ -223,6 +223,12 @@ h2{
 .gallery-section.compact{ padding:12px; margin-bottom:22px }
 .gallery-section.compact .carousel-container{ height:320px }
 
+.gallery-section {
+    max-width: 900px;       /* perfect size */
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* ============================================================
    RECENT PROJECTS (cards)
 ============================================================ */
